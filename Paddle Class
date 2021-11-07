@@ -1,0 +1,54 @@
+import java.awt.*;
+import java.awt.event.KeyEvent;
+
+public class Paddle extends Rectangle {
+    private int dY = 4 ;
+    private int dYw, dYs;
+    public Paddle(int x, int y) {
+        super(x, y, 10, 120);
+    }
+    public void movePaddle(Ball b1) {
+        translate(0, b1.dY);
+    }
+    public void keyPressed() {
+        if(GDV5.KeysPressed[KeyEvent.VK_W]) {
+            dYw = 10;
+        }
+        if (GDV5.KeysPressed[KeyEvent.VK_S]) {
+            dYs = 10;
+        }
+        //This code is how the paddle is controlled using the keyboard. The number by which the paddle translates is determined
+        //by the key that is pressed. If W is pressed then the dYw variable becomes 10, if the S key is pressed then dYs becomes 10. These
+        //two variables are later subtracted from each other in the other move method, serving as a smooth transition between the press of the key and
+        //the paddle moving.
+    }
+    public void keyReleased() {
+        if(!GDV5.KeysPressed[KeyEvent.VK_W]) {
+            dYw = 0;
+        }if(!GDV5.KeysPressed[KeyEvent.VK_S]) {
+            dYs = 0;
+        }
+        //This piece of code is small, and just make sures that if no key pressed is being detected, the paddle doesn't move by itself.
+        //This makes the dYs and dYw 0 so that no translation is applied to the paddle.
+    }
+    public void keyPressedTwo() {
+        if(GDV5.KeysPressed[38]) {
+            dYw = 10;
+        }
+        if (GDV5.KeysPressed[40]) {
+            dYs = 10;
+        }
+    }
+    //Same as keyPressed method previously, but works primarily for paddleTwo
+    public void keyReleasedTwo() {
+        if(!GDV5.KeysPressed[38]) {
+            dYw = 0;
+        }if(!GDV5.KeysPressed[40]) {
+            dYs = 0;
+        }
+        //Same as keyReleased method previously, but works primarily for paddleTwo
+    }
+    public void move() {
+        this.translate(0,dYs - dYw);
+    }
+}
