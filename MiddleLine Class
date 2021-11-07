@@ -1,0 +1,10 @@
+import java.awt.*;
+
+public class MiddleLine extends Rectangle {
+    public MiddleLine() {
+        super(600,0,5,800);
+    }
+        //Nothing much, just a rectangular object in the middle that serves for the visual aspect of the game.
+    //Separates the left and right side from each other, and I used this to make the ball's color changing effect smoother as
+    //it went from one side to the other.
+}
