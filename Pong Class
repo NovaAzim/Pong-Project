@@ -1,0 +1,225 @@
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.Font;
+class pong extends GDV5 {
+    static Ball b1 = new Ball(20, 20);
+    static Paddle paddleOne = new Paddle(50, 600);
+    static Paddle paddleTwo = new Paddle(1150, 555);
+    static MiddleLine middleLine = new MiddleLine();
+    static int scoreOne = 0;
+    static int scoreTwo = 0;
+    boolean flag = true;
+//This is just the declaration of all my objects used in the project. The main ones,b1, paddleOne, and PaddleTwo are the foundation of this
+    //project.ScoreOne, scoreTwo, middleLine, and the flag are final touches added to the game, but are just as important as the latter.
+
+    public static void main(String[] args) {
+        pong p = new pong();
+        p.start();
+        p.update();
+
+    }
+
+    public void startScore() {
+        if(b1.intersects(paddleOne) && flag) {
+            scoreOne++;
+            flag = false;
+        }
+        if(b1.intersects(paddleTwo) && flag) {
+            scoreTwo++;
+            flag = false;
+        }
+        //THIS GAVE ME A WHOLE LOT OF TROUBLE, but thankfully, at the end I was able to get my score to fully function. The meaning
+        //behind this code is whenever this "flag" variable, which is of type boolean, is true, and the ball intersects a paddle, the score counter will register
+        //one point. At first, I attempted doing this by only using the location of the two objects, but this was very unreliable, as sometimes the computer
+        //would not catch it intersecting, or if it did, it would register in multiple frames, therefore, making the score go up by a number greater than 1.
+        //After a lot of trial and error and help from my teacher(and peers), I was able to come up with a solution that worked seamlessly.
+    }
+
+    @Override
+    public void update() {
+        if (b1.getX() >GDV5.getMaxWindowX()/2 && b1.getX() < (GDV5.getMaxWindowX()/2 + 10)) flag = true;
+        if (GDV5.KeysTyped[KeyEvent.VK_1]) {
+            b1.move(b1, paddleTwo, paddleOne);
+            paddleOne.keyPressed();
+            paddleOne.keyReleased();
+            paddleOne.move();
+
+            paddleTwo.movePaddle(b1);
+            startScore();
+
+        } else if (GDV5.KeysTyped[KeyEvent.VK_2]) {
+            b1.move(b1, paddleTwo, paddleOne);
+
+            paddleOne.keyPressed();
+            paddleOne.keyReleased();
+            paddleOne.move();
+            paddleTwo.keyPressedTwo();
+            paddleTwo.keyReleasedTwo();
+            paddleTwo.move();
+            startScore();
+        }
+        //This is the method that I used to determine whether the player is going to pick single-player or multi-player mode. The "KeyEvent" class is an amazing
+        //class, and this being my first-time using it, proved to be a very practical and simple method of doing so much. Being able to gather the user's input
+        //and control code with it is simply amazing to me.
+
+
+    }
+
+
+    @Override
+    public void draw(Graphics2D win) {
+        int randomRed = (int) (Math.random() * 200) + 1;
+        int randomBlue = (int) (Math.random() * 200) + 1;
+        int randomGreen = (int) (Math.random() * 50) + 1;
+        Color randomColor = new Color(randomRed, randomBlue, randomGreen);
+        //This is how I most of the elements of this game have a color changing effect. Using the method of RGB-numbers to make several colors,
+        //I made 3 number variables that would generate random values, and using those, made a new object of the Color Class. Whenever I wanted to be "RGB",
+        //I would refer to this "randomColor" object.
+        win.setColor(randomColor);
+        win.setFont(new Font("Courier", 35, 35));
+        win.drawString("PRESS 1 FOR SINGLE-PLAYER OR 2 FOR MULTI-PLAYER", 125, 400);
+        win.setColor(Color.WHITE);
+        win.drawString("Controls For Player 1",75,100);
+        win.drawString("W: Move Up",125,150);
+        win.drawString("S: Move Down",115,200);
+        win.drawString("Controls For Player 2",785,100);
+        win.drawString("Up Arrow: Move Up",795,150);
+        win.drawString("Down Arrow: Move Down",770,200);
+        win.setColor(randomColor);
+        win.setFont(new Font("Courier", 45, 45));
+        win.drawString("Made By Azim Ahmed", 375, 500);
+        if (GDV5.KeysTyped[KeyEvent.VK_1]) {
+
+            String scorePad = "Score: " + scoreOne;
+            win.setColor(Color.BLACK);
+            win.setFont(new Font("Courier", 35, 35));
+            win.drawString("Controls For Player 1",75,100);
+            win.drawString("W: Move Up",125,150);
+            win.drawString("S: Move Down",115,200);
+            win.drawString("Controls For Player 2",785,100);
+            win.drawString("Up Arrow: Move Up",795,150);
+            win.drawString("Down Arrow: Move Down",770,200);
+            win.drawString("PRESS 1 FOR SINGLE-PLAYER OR 2 FOR MULTI-PLAYER", 125, 400);
+            win.setFont(new Font("Courier", 45, 45));
+            win.drawString("Made By Azim Ahmed", 375, 500);
+            win.setColor(randomColor);
+            win.drawString(scorePad, 50, 50);
+            win.fillOval(b1.x, b1.y, b1.width, b1.height);
+            win.fill(paddleOne);
+            win.setColor(Color.LIGHT_GRAY);
+            win.fill(middleLine);
+            win.setColor(Color.WHITE);
+            win.fill(paddleTwo);
+            if (b1.getX() > middleLine.getX()) {
+                win.setColor(Color.WHITE);
+                win.fillOval(b1.x, b1.y, b1.width, b1.height);
+                win.setColor(randomColor);
+                win.fill(middleLine);
+            }
+            if (b1.getX() < middleLine.getX()) {
+                win.setColor(randomColor);
+                win.fillOval(b1.x, b1.y, b1.width, b1.height);
+                win.setColor(Color.WHITE);
+                win.fill(middleLine);
+            }
+            if (b1.dX == 0 && b1.dY == 0) {
+                win.setColor(randomColor);
+                win.setFont(new Font("Courier", 60, 60));
+                win.drawString("GAME OVER!", 410, 400);
+                win.drawString(("Score : " + scoreOne), 447, 500);
+                win.drawString(("Press Enter To Activate Instant Play"),125,600);
+                if(GDV5.KeysTyped[KeyEvent.VK_ENTER]) {
+                    b1.resetBall(paddleTwo);
+                    scoreOne = 0;
+                }
+                win.setColor(Color.BLACK);
+                win.setFont(new Font("Courier", 45, 45));
+                win.drawString(scorePad, 50, 50);
+                win.fill(middleLine);
+                win.fillOval(b1.x, b1.y, b1.width, b1.height);
+                win.fill(paddleOne);
+                win.fill(paddleTwo);
+
+
+            }
+        } else if (GDV5.KeysTyped[KeyEvent.VK_2]) {
+
+            String scorePad = "Score: " + scoreOne;
+            String scorePadTwo = "Score: " + scoreTwo;
+            win.setColor(Color.BLACK);
+            win.setFont(new Font("Courier", 35, 35));
+            win.drawString("Controls For Player 1",75,100);
+            win.drawString("W: Move Up",125,150);
+            win.drawString("S: Move Down",115,200);
+            win.drawString("Controls For Player 2",785,100);
+            win.drawString("Up Arrow: Move Up",795,150);
+            win.drawString("Down Arrow: Move Down",770,200);
+            win.drawString("PRESS 1 FOR SINGLE-PLAYER OR 2 FOR MULTI-PLAYER", 125, 400);
+            win.setFont(new Font("Courier", 45, 45));
+            win.drawString("Made By Azim Ahmed", 375, 500);
+            win.setFont(new Font("Courier", 35,35));
+            win.setColor(randomColor);
+            win.drawString(scorePad, 250, 50);
+            win.setColor(Color.WHITE);
+            win.drawString(scorePadTwo,850,50);
+            win.fillOval(b1.x, b1.y, b1.width, b1.height);
+            win.setColor(randomColor);
+            win.fill(paddleOne);
+            win.setColor(Color.LIGHT_GRAY);
+            win.fill(middleLine);
+            win.setColor(Color.WHITE);
+            win.fill(paddleTwo);
+            if (b1.getX() > middleLine.getX()) {
+                win.setColor(Color.WHITE);
+                win.fillOval(b1.x, b1.y, b1.width, b1.height);
+                win.setColor(randomColor);
+                win.fill(middleLine);
+            }
+            if (b1.getX() < middleLine.getX()) {
+
+                win.setColor(randomColor);
+                win.fillOval(b1.x, b1.y, b1.width, b1.height);
+                win.setColor(Color.WHITE);
+                win.fill(middleLine);
+            }
+            if (b1.dX == 0 && b1.dY == 0) {
+                String results = "";
+                if (b1.getX() < 600) {
+                    win.setColor(randomColor);
+                    results = "GAMEOVER! Player 2 wins!";
+                }
+                if(b1.getX() > 600) {
+                    win.setColor(Color.WHITE);
+
+                    results = "GAMEOVER! Player 1 wins!";
+                }
+                win.setColor(randomColor);
+                win.setFont(new Font("Courier", 60, 60));
+                win.drawString(results, 240, 400);
+                win.setColor(randomColor);
+
+                win.drawString(("Highest Rally: " + scoreTwo), 400, 500);
+                win.drawString(("Press Enter To Activate Instant Play"),125,600);
+                if(GDV5.KeysTyped[KeyEvent.VK_ENTER]) {
+                    b1.resetBall(paddleTwo);
+                    scoreOne = 0;
+                    scoreTwo = 0;
+                }
+                win.setColor(Color.BLACK);
+                win.setFont(new Font("Courier", 35, 35));
+                win.drawString(scorePad, 250, 50);
+                win.drawString(scorePadTwo, 850, 50);
+                win.fill(middleLine);
+                win.fillOval(b1.x, b1.y, b1.width, b1.height);
+                win.fill(paddleOne);
+                win.fill(paddleTwo);
+
+            }
+//This big chunk of code is extremely long and just a large process of picking colors, fonts and designs for the game itself. Although it is probably
+            //the biggest piece of code in this whole project, it does not control any of the fundamentals(bouncing of ball off of paddle, choosing of
+            //single-player mode or multiplayer,etc.)
+        }
+
+    }
+
+}
